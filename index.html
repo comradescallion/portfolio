@@ -327,11 +327,11 @@
         .scallion-divider { color: var(--accent-color); width: 4rem; height: 4rem; margin: 20px 0; opacity: 0.8; background-image: url(scallion.png); background-size: contain; background-repeat: no-repeat;}
 
         /* Project Cards */
-        .pv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; }
+        .pv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 40px; }
         .pv-card { border: 2px solid #000; background: rgba(255,206,52, 0.8); box-shadow: 10px 10px 0px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
         .pv-card:hover { transform: translateY(-5px); box-shadow: 15px 15px 0px rgba(0,0,0,0.2); }
-        .pv-img { width: 100%; height: 200px; object-fit: cover; border-bottom: 2px solid #000; filter: grayscale(100%); transition: filter 0.3s; }
-        .pv-card:hover .pv-img { filter: grayscale(0%); }
+        .pv-img { width: 100%; height: 200px; object-fit: contain; background-color: #000; border-bottom: 2px solid #000; filter: saturate(100%); transition: filter 0.3s; }
+        .pv-card:hover .pv-img { filter: saturate(200%); }
         .pv-info { padding: 15px; }
         .pv-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
         .pv-meta { font-family: var(--font-mono); font-size: 0.8rem; opacity: 0.7; }
@@ -339,7 +339,7 @@
         /* About Layout */
         .about-split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
         .about-text { font-size: 1.2rem; line-height: 1.6; }
-        .about-img-placeholder { width: 100%; aspect-ratio: 1/1; border: 2px solid #000; background: #eee; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); color: #aaa; }
+        .about-img-placeholder { width: 100%; aspect-ratio: 1/1; border: 2px solid #000; background-image: url(raina.jpg); background-size: cover; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); color: #aaa; }
         .about-skills { margin-top: 30px; border: 2px solid #000; padding: 20px; }
         .skill-tag { display: inline-block; background: #000; color: #fff; padding: 5px 10px; margin: 5px; font-family: var(--font-mono); font-size: 0.9rem; }
 
@@ -350,7 +350,7 @@
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(22, 22, 22, 0.95); align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
         .modal.show { display: flex; opacity: 1; }
         .modal-content { background: transparent; max-width: 800px; width: 90%; text-align: center; color: #fff; position: relative; }
-        .modal-img { width: 100%; max-height: 60vh; object-fit: contain; margin-bottom: 30px; border: 1px solid #333; }
+        .modal-img { width: 100%; max-height: 60vh; object-fit: cover; margin-bottom: 30px; border: 1px solid #333; }
         .modal-text { max-width: 600px; margin: 0 auto; }
         .modal-title { font-size: 2rem; font-style: italic; margin-bottom: 15px; color: var(--accent-color); }
         .close-area { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; cursor: pointer; }
@@ -455,34 +455,44 @@
                 <div class="pv-header">Projects</div>
                 <div class="pv-grid">
                     <!-- scraplight -->
-                    <div class="pv-card" onclick="openModal('scraplight', 'Stealth-horror game made in Unity Engine 3D. Role: Project Manager, Producer, Debugger, Head of sound design and programmer.', 'https://placehold.co/800x450/111/ffce34?text=scraplight')">
-                        <img src="https://placehold.co/800x450/111/ffce34?text=scraplight" class="pv-img">
+                    <div class="pv-card" onclick="openModal('scraplight', 'Stealth-horror game made in Unity Engine 3D. Role: Project Manager, Producer, Debugger, Head of sound design and programmer.', 'scraplight-hype.png', 'https://rainascallion.itch.io/scraplight')">
+                        <img src="scraplight-banner.png" class="pv-img">
                         <div class="pv-info"><div class="pv-title">scraplight</div><div class="pv-meta">Unity 3D / C#</div></div>
                     </div>
                     <!-- Twinball -->
-                    <div class="pv-card" onclick="openModal('Twinball', 'Action-pinball-boss rush game made in Godot. Role: Music, Sound Design, Level Design. Collaborating with Studio Collider.', 'https://placehold.co/800x450/111/ffce34?text=Twinball')">
-                        <img src="https://placehold.co/800x450/111/ffce34?text=Twinball" class="pv-img">
+                    <div class="pv-card" onclick="openModal('Twinball', 'Action-pinball-boss rush game made in Godot. Role: Music, Sound Design, Level Design. Working with Studio Collider.', 'twinball2.png', 'https://twinballgame.com/')">
+                        <img src="twinball-banner.png" class="pv-img">
                         <div class="pv-info"><div class="pv-title">Twinball</div><div class="pv-meta">Godot</div></div>
                     </div>
                     <!-- KLAXON -->
-                    <div class="pv-card" onclick="openModal('KLAXON', 'Action-Roguelite game for Roll Your Fate Game Jam 2025. Created in 48 hours using Godot. Role: Programmer, Shader Designer, Debugger.', 'https://placehold.co/800x450/111/ffce34?text=KLAXON')">
-                        <img src="https://placehold.co/800x450/111/ffce34?text=KLAXON" class="pv-img">
+                    <div class="pv-card" onclick="openModal('KLAXON', 'Action-Roguelite game for Roll Your Fate Game Jam 2025. Created in 48 hours using Godot. Role: Programmer, Shader Designer, Debugger.', 'klaxon-poster.png', 'https://rustypepper.itch.io/klaxon')">
+                        <img src="klaxon-banner.png" class="pv-img">
                         <div class="pv-info"><div class="pv-title">KLAXON</div><div class="pv-meta">Godot / Shaders</div></div>
                     </div>
+                    <!-- Webgotchi -->
+                    <div class="pv-card" onclick="openModal('Webgotchi', 'A web-based virtual pet game made utilizing browser popups. Solo project.', 'webgotchi.png', 'https://people.rit.edu/rsp9929/235/project-3/')">
+                        <img src="webgotchi-banner.png" class="pv-img">
+                        <div class="pv-info"><div class="pv-title">Webgotchi</div><div class="pv-meta">Browser Game / JavaScript</div></div>
+                    </div>
+                    <!-- TOWNSEND -->
+                    <div class="pv-card" onclick="openModal('TOWNSEND', 'TOWNSEND is a writing/web design project with the purpose of invoking old internet creepypastas. Solo project.', 'townsend.png', 'https://cabbit.club/TOWNSEND/thepastacreependium/')">
+                        <img src="townsend-banner.png" class="pv-img">
+                        <div class="pv-info"><div class="pv-title">TOWNSEND</div><div class="pv-meta">Web Design / Writing</div></div>
+                    </div>
                     <!-- Deep-Sea Aquarium -->
-                    <div class="pv-card" onclick="openModal('Deep-Sea Aquarium', 'A simulation program with autonomously acting fish behaviors. Solo project.', 'https://placehold.co/800x450/111/ffce34?text=Aquarium')">
-                        <img src="https://placehold.co/800x450/111/ffce34?text=Aquarium" class="pv-img">
+                    <div class="pv-card" onclick="openModal('Deep-Sea Aquarium', 'A simulation program with autonomously acting fish behaviors. Solo project.', 'aquarium2.png', 'https://igme-202-2241.github.io/202-work-comradescallion/Project_04/')">
+                        <img src="aquarium.jpg" class="pv-img">
                         <div class="pv-info"><div class="pv-title">Deep-Sea Aquarium</div><div class="pv-meta">Unity 3D / AI</div></div>
                     </div>
                     <!-- Malpractice Makes Perfect -->
-                    <div class="pv-card" onclick="openModal('Malpractice Makes Perfect', 'Point-and-click puzzle game. Responsible for programming architecture and group management.', 'https://placehold.co/800x450/111/ffce34?text=Malpractice')">
-                        <img src="https://placehold.co/800x450/111/ffce34?text=Malpractice" class="pv-img">
+                    <div class="pv-card" onclick="openModal('Malpractice Makes Perfect', 'Point-and-click puzzle game. Responsible for programming architecture and group management.', 'malpractice.png', 'https://rustypepper.itch.io/malpracticemakesperfect')">
+                        <img src="malpractice.png" class="pv-img">
                         <div class="pv-info"><div class="pv-title">Malpractice Makes Perfect</div><div class="pv-meta">Monogame / C#</div></div>
                     </div>
                     <!-- Scallion.Farm -->
-                    <div class="pv-card" onclick="openModal('Scallion.Farm', 'Personal website project to learn web development, design, and JavaScript.', 'https://placehold.co/800x450/111/ffce34?text=Scallion.Farm')">
-                        <img src="https://placehold.co/800x450/111/ffce34?text=Scallion.Farm" class="pv-img">
-                        <div class="pv-info"><div class="pv-title">Scallion.Farm</div><div class="pv-meta">Web Dev</div></div>
+                    <div class="pv-card" onclick="openModal('scallion.farm', 'Personal website project to learn web development, design, and JavaScript.', 'farmart.png', 'https://scallion.farm')">
+                        <img src="farm.png" class="pv-img">
+                        <div class="pv-info"><div class="pv-title">scallion.farm</div><div class="pv-meta">Web Dev</div></div>
                     </div>
                 </div>
             </div>
@@ -493,12 +503,12 @@
     <div id="about-view">
         <div class="pv-inner">
             <div class="pv-container">
-                <div class="pv-header">Who I Am</div>
+                <div class="pv-header">what is a raina</div>
                 <div class="about-split">
                     <div>
                         <div class="about-text">
                             <p style="margin-bottom: 20px;">
-                                <strong>Hi! I'm Raina.</strong> I'm Game Design and Development Major at Rochester Institute of Technology.
+                                <strong>Hi! I'm Raina :)</strong> I'm a Game Design and Development Major at the Rochester Institute of Technology, with a passion for creating memorable digital experiences.
                             </p>
                         </div>
                         <div class="about-skills">
@@ -526,7 +536,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="about-img-placeholder">[ PHOTO_PLACEHOLDER ]</div>
+                        <div class="about-img-placeholder"></div>
                     </div>
                 </div>
             </div>
@@ -537,16 +547,17 @@
     <div id="content-wrapper" onclick="closeAllViews()">
         <section class="hero" id="home">
             <div class="scallion-divider"></div>
-            <h1 class="fade-in">raina scallion</h1>
-            <p class="fade-in">from games</p>
-            <div class="main-tag fade-in">hmu?</div>
+            <h1 class="fade-in">raina pereira</h1>
+            <p class="fade-in">making games and digital locales</p>
+            <!--<div class="main-tag fade-in">hmu?</div>-->
             <div class="scallion-divider"></div>
         </section>
 
         <footer id="contact">
             <p>
                 <a href="mailto:rsp9929@rit.edu">rsp9929@rit.edu</a> / 
-                <a href="https://www.linkedin.com/in/raina-pereira/" target="_blank">LinkedIn</a>
+                <a href="https://rainascallion.itch.io/" target="_blank">itch.io</a> / 
+                <a href="https://www.linkedin.com/in/raina-pereira-7268b028b/" target="_blank">LinkedIn</a>
             </p>
         </footer>
     </div>
@@ -560,7 +571,7 @@
             <div class="modal-text">
                 <h2 id="modalTitle" class="modal-title">Title</h2>
                 <p id="modalDesc" style="color: #aaa; margin-bottom: 20px;">Description</p>
-                <a href="#" style="font-family: var(--font-mono); color: var(--accent-color);">play here</a>
+                <a id="modalLink" href="#" target="_blank" style="font-family: var(--font-mono); color: var(--accent-color);">play here</a>
             </div>
         </div>
     </div>
@@ -738,11 +749,13 @@
         const mTitle = document.getElementById('modalTitle');
         const mDesc = document.getElementById('modalDesc');
         const mImg = document.getElementById('modalImg');
+        const mLink = document.getElementById('modalLink');
 
-        function openModal(title, desc, imgSrc) {
+        function openModal(title, desc, imgSrc, link) {
             mTitle.textContent = title;
             mDesc.textContent = desc;
             mImg.src = imgSrc;
+            mLink.href = link;
             modal.classList.add('show');
         }
 
