@@ -175,7 +175,8 @@
             padding-top: 100px; 
             padding-left: 28vw; /* Matches the visual grid offset */
             padding-right: 5vw;
-            overflow-y: auto; /* Content scrolls here, not on body */
+            overflow-y: scroll; /* Content scrolls here, not on body */
+            -webkit-overflow-scrolling: touch;
             max-height: 100vh;
             pointer-events: auto; /* Allow clicks to pass through empty areas */
         }
