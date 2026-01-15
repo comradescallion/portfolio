@@ -582,6 +582,31 @@
     </div>
 
     <script>
+        // use url params
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('')) {
+                const view = urlParams.get('');
+                if (view === 'projects') {
+                    openProjectsView();
+                } else if (view === 'about') {
+                    openAboutView();
+                }
+            }
+        });
+
+        // update url params
+        function updateURLParam(param, value) {
+            const url = new URL(window.location);
+            if (value) {
+                url.searchParams.set(param, value);
+            } else {
+                url.searchParams.delete(param);
+            }
+            window.history.replaceState({}, '', url);
+        }
+
+
         // ==========================================================================
         // 1. LAYOUT & GEOMETRY LOGIC
         // ==========================================================================
@@ -707,24 +732,28 @@
         
         // Open Projects
         function openProjectsView() {
+            updateURLParam('', 'projects');
             document.body.classList.remove('view-about');
             document.body.classList.add('view-projects');
             document.body.style.overflow = 'hidden';
         }
         
         function closeProjectsView() {
+            updateURLParam('');
             document.body.classList.remove('view-projects');
             document.body.style.overflow = 'auto';
         }
         
         // Open About
         function openAboutView() {
+            updateURLParam('', 'about');
             document.body.classList.remove('view-projects');
             document.body.classList.add('view-about');
             document.body.style.overflow = 'hidden';
         }
         
         function closeAboutView() {
+            updateURLParam('');
             document.body.classList.remove('view-about');
             document.body.style.overflow = 'auto';
         }
