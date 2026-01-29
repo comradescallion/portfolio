@@ -821,6 +821,60 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === "Escape") closeModal();
         });
+
+
+        // ==========================================================================
+        // scroll at bottom of screen
+        // ==========================================================================
+
+        const projectsInner = document.querySelector('#projects-view .pv-inner');
+        const aboutInner = document.querySelector('#about-view .pv-inner');
+        const mainPage = document.getElementById('content-wrapper');
+
+        projectsInner.addEventListener('wheel', (event) => {
+            if (event.deltaY > 0) {
+                if ((projectsInner.scrollHeight - projectsInner.clientHeight) <= projectsInner.scrollTop) {
+                    openAboutView();
+                }
+            }
+            if (event.deltaY < 0) {
+                if (projectsInner.scrollTop === 0) {
+                    closeAllViews();
+                }
+            }
+        });
+
+        aboutInner.addEventListener('wheel', (event) => {
+            if (event.deltaY > 0) {
+                if ((aboutInner.scrollHeight - aboutInner.clientHeight) <= aboutInner.scrollTop) {
+                    closeAllViews();
+                }
+            }
+            if (event.deltaY < 0) {
+                if (aboutInner.scrollTop === 0) {
+                    openProjectsView();
+                }
+            }
+        });
+
+        mainPage.addEventListener('wheel', (event) => {
+            if (document.body.classList.contains('view-projects') || document.body.classList.contains('view-about')) {
+                return; // Ignore if already in a view
+            }
+            else {
+                if (event.deltaY > 0) {
+                    if ((mainPage.scrollHeight - mainPage.clientHeight) <= mainPage.scrollTop) {
+                        openProjectsView();
+                    }
+                }
+                else if (event.deltaY < 0) {
+                    if (mainPage.scrollTop === 0) {
+                        openAboutView();
+                    }
+                }
+            }
+        });
+
     </script>
 </body>
 </html>
