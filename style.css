@@ -1,0 +1,448 @@
+/* ==========================================================================
+    CONFIGURATION & VARIABLES
+    ========================================================================== */
+:root {
+    /* --- COLOR PALETTE --- */
+    --bg-color: #161616;        /* Main content background (dark grey) */
+    --gutter-bg: #080808;       /* Sidebar/Gutter background (black) */
+    --text-color: #ffffff;      /* Primary text color */
+    --accent-color: #ffce34;    /* Projects Theme (Yellow) */
+    --tab-white: #ffffff;       /* About Theme (White) */
+    --dim-color: #888;          /* Secondary text color */
+    
+    /* --- TYPOGRAPHY --- */
+    --font-main: 'Times New Roman', Times, serif; 
+    --font-mono: 'Courier New', Courier, monospace;
+    
+    /* --- ANIMATION SETTINGS --- */
+    --transition-speed: 0.3s;
+    --curtain-speed: 0.8s;
+    --curtain-ease: cubic-bezier(0.25, 1, 0.5, 1); /* Custom ease for smooth swing */
+
+    /* --- DYNAMIC GEOMETRY (Calculated by JS for Desktop) --- */
+    /* Default fallback values for Desktop (Swing Left/CCW) */
+    
+    /* Closed States (Waiting) */
+    --ang-white: -80deg;
+    --ang-yellow: -70deg;
+    
+    /* Hover States (Interaction) */
+    --ang-white-hov: -75deg;
+    --ang-yellow-hov: -65deg;
+    
+    /* Open States (Active View) */
+    --ang-open-white: -5deg;
+    --ang-open-yellow: -5deg;
+    --ang-open-peek-tab: -2deg; /* Tab peeking from behind open page */
+    
+    /* Interaction Peeks (Hovering content to see menu) */
+    --ang-peek-main: -25deg;
+    --ang-peek-deep: -35deg;
+    
+    /* Tab Positioning along the curtain edge */
+    --tab-dist-white: 85vh;
+    --tab-dist-yellow: 65vh;
+}
+
+/* ==========================================================================
+    GLOBAL RESET & LAYOUT
+    ========================================================================== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: var(--gutter-bg);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    line-height: 1.5;
+    overflow-x: hidden;
+    font-size: 18px;
+    
+    /* GRID LAYOUT: 
+        - Left Column (12.5vw): Reserved for the "spine" of the fan.
+        - Right Column (1fr): Available space for content. */
+    display: grid;
+    grid-template-columns: 12.5vw 1fr;
+}
+
+a {
+    color: var(--text-color);
+    text-decoration: underline;
+    text-decoration-color: var(--dim-color);
+    text-underline-offset: 4px;
+    transition: all var(--transition-speed);
+}
+a:hover { color: var(--accent-color); text-decoration-color: var(--accent-color); font-style: italic; }
+
+/* ==========================================================================
+    3. CURTAINS & TABS (The Navigation System)
+    ========================================================================== */
+/* Shared Styles for the rotating "pages" */
+.curtain-layer {
+    position: fixed;
+    left: 0; bottom: 0;
+    width: 300vw; height: 300vh; /* Massive size to ensure coverage when rotated */
+    
+    /* Desktop Pivot: Bottom-Left Corner */
+    transform-origin: 0% 100%; 
+    
+    transition: transform var(--curtain-speed) var(--curtain-ease);
+    will-change: transform;
+    z-index: 9000;
+    box-shadow: 2px 10px 15px -3px rgba(0,0,0,0.3);
+    
+    pointer-events: none; /* Let clicks pass through until active */
+    cursor: pointer;
+}
+
+/* Allow interaction when intro animation is done */
+body.nav-active .curtain-layer { pointer-events: auto; }
+
+/* Specific Curtains */
+#curtain-white {
+    background-color: var(--tab-white);
+    color: #000;
+    z-index: 9600; /* Always visually higher */
+    transform: rotate(0deg); /* Initial state before JS loads */
+}
+
+#curtain-yellow {
+    background-color: var(--accent-color);
+    color: #000;
+    z-index: 9001; /* Visually lower */
+    transform: rotate(0deg);
+}
+
+/* The clickable tabs attached to the curtains */
+.nav-tab {
+    position: absolute;
+    bottom: -69px; /* Hangs off the diagonal edge */
+    height: 70px; padding: 0 40px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-weight: 900; font-size: 1.5rem; 
+    text-transform: uppercase; letter-spacing: 1px;
+    color: #000;
+    border-radius: 0 0 16px 16px; /* Rounded bottom corners */
+    box-shadow: 2px 10px 15px -3px rgba(0,0,0,0.3);
+    white-space: nowrap;
+}
+
+/* Position tabs using dynamic variables calculated in JS */
+#curtain-white .nav-tab  { background-color: var(--tab-white); left: var(--tab-dist-white); }
+#curtain-yellow .nav-tab { background-color: var(--accent-color); left: var(--tab-dist-yellow); }
+
+/* ==========================================================================
+    FULL SCREEN VIEWS (Projects & About Page Content)
+    ========================================================================== */
+/* These containers rotate WITH the curtains to look "printed" on them */
+#projects-view, #about-view {
+    position: fixed;
+    left: 0; bottom: 0;
+    width: 300vw; height: 300vh;
+    
+    /* Must match curtain geometry exactly */
+    transform-origin: 0% 100%; 
+    transform: rotate(var(--ang-yellow)); 
+    
+    /* Transitions for smooth entering/exiting */
+    transition: 
+        transform var(--curtain-speed) var(--curtain-ease), 
+        opacity 0.4s ease, 
+        visibility 0s 0.8s;
+    
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    color: #000;
+    overflow: hidden; 
+}
+
+#projects-view { z-index: 9550; } /* Sandwiched between Yellow and White */
+#about-view    { z-index: 9650; transform: rotate(var(--ang-white)); } /* On top of White */
+
+#about-view a { color: var(--accent-color); }
+
+/* Inner Content Wrapper: Corrects padding and scroll handling */
+.pv-inner {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100vw; height: 100vh;
+    padding-top: 100px; 
+    padding-left: 28vw; /* Matches the visual grid offset */
+    padding-right: 5vw;
+    overflow-y: scroll; /* Content scrolls here, not on body */
+    -webkit-overflow-scrolling: touch;
+    max-height: 100vh;
+    pointer-events: auto; /* Allow clicks to pass through empty areas */
+}
+
+.pv-container {
+    width: 100%; max-width: 900px;
+    padding-bottom: 100px;
+    pointer-events: auto; /* Re-enable interaction for actual content */
+}
+
+/* ==========================================================================
+    MAIN CONTENT WRAPPER (Home Page)
+    ========================================================================== */
+#content-wrapper {
+    grid-column: 2;
+    justify-self: center; /* Center in the available right-side space */
+    
+    background-color: var(--bg-color);
+    min-height: 70vh;
+    position: relative;
+    z-index: 1;
+    
+    width: 100%; 
+    box-shadow: 0 0 40px rgba(0,0,0,0.6); 
+    transition: opacity 0.5s ease;
+}
+
+/* ==========================================================================
+    STATE LOGIC & INTERACTIONS
+    ========================================================================== */
+
+/* --- ANIMATION STATES (Intro) --- */
+body.step-1 #curtain-white { transform: rotate(var(--ang-white)); }
+body.step-2 #curtain-yellow { transform: rotate(var(--ang-yellow)); }
+
+/* --- HOVER STATES (When tabs are closed) --- */
+body.nav-active:not(.view-about) #curtain-white:hover {
+    transform: rotate(var(--ang-white-hov));
+}
+
+body.nav-active:not(.view-projects):not(.view-about) #curtain-yellow:hover {
+    transform: rotate(var(--ang-yellow-hov)) !important;
+}
+
+/* --- ACTIVE STATE: VIEW PROJECTS --- */
+body.view-projects #curtain-yellow {
+    transform: rotate(var(--ang-open-yellow)) !important;
+    z-index: 9500;
+    pointer-events: auto; cursor: default; /* Becomes solid background */
+}
+
+body.view-projects #projects-view {
+    transform: rotate(var(--ang-open-yellow));
+    opacity: 1;
+    pointer-events: auto; visibility: visible;
+    transition: transform var(--curtain-speed) var(--curtain-ease), opacity 0.5s ease 0.3s, visibility 0s 0s;
+}
+
+body.view-projects #curtain-white {
+    transform: rotate(var(--ang-white)) !important; /* Stays closed */
+    z-index: 9600; 
+}
+
+/* Allow hovering the White Tab even when viewing Projects */
+body.view-projects #curtain-white:hover {
+    transform: rotate(var(--ang-white-hov)) !important;
+}
+
+/* --- ACTIVE STATE: VIEW ABOUT --- */
+body.view-about #curtain-white {
+    transform: rotate(var(--ang-open-white)) !important;
+    z-index: 9600;
+    pointer-events: auto; cursor: default;
+}
+
+body.view-about #about-view {
+    transform: rotate(var(--ang-open-white));
+    opacity: 1;
+    pointer-events: auto; visibility: visible;
+    transition: transform var(--curtain-speed) var(--curtain-ease), opacity 0.5s ease 0.3s, visibility 0s 0s;
+}
+
+body.view-about #curtain-yellow {
+    transform: rotate(var(--ang-open-peek-tab)) !important; /* Peeks out from bottom edge */
+    z-index: 9500;
+    pointer-events: auto;
+}
+
+/* Keep Projects content hidden and positioned correctly */
+body.view-about #projects-view {
+    transform: rotate(var(--ang-open-peek-tab)); 
+    opacity: 0;
+}
+
+/* --- MAIN PAGE DIMMING --- */
+body.view-projects #content-wrapper,
+body.view-about #content-wrapper {
+    opacity: 0.2;
+    filter: blur(5px) grayscale(80%);
+    pointer-events: auto; cursor: pointer;
+}
+
+/* --- PEEKING LOGIC (The "Pull Back" Effect) --- */
+body.view-projects #content-wrapper:hover,
+body.view-about #content-wrapper:hover {
+    opacity: 0.6; filter: blur(0px) grayscale(20%);
+}
+
+/* Peek Main Page from Projects View */
+body.view-projects:has(#content-wrapper:hover) #curtain-yellow,
+body.view-projects:has(#content-wrapper:hover) #projects-view {
+    transform: rotate(var(--ang-peek-main)) !important;
+}
+
+/* Peek Main Page from About View */
+body.view-about:has(#content-wrapper:hover) #curtain-white,
+body.view-about:has(#content-wrapper:hover) #about-view {
+    transform: rotate(var(--ang-peek-deep)) !important;
+}
+
+body.view-about:has(#content-wrapper:hover) #curtain-yellow {
+    transform: rotate(var(--ang-peek-main)) !important;
+}
+
+/* Peek Projects Tab while in About View */
+body.view-about:has(#curtain-yellow:hover) #curtain-white,
+body.view-about:has(#curtain-yellow:hover) #about-view {
+    transform: rotate(var(--ang-peek-main)) !important;
+}
+
+/* ==========================================================================
+    COMPONENT STYLES
+    ========================================================================== */
+/* Utils */
+.fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* Headers & Buttons */
+.pv-header { font-family: var(--font-mono); font-size: 3rem; font-weight: 900; margin-bottom: 40px; text-transform: uppercase; letter-spacing: -2px; }
+.back-btn { font-family: var(--font-mono); font-weight: bold; text-transform: uppercase; cursor: pointer; border: 2px solid #000; padding: 10px 20px; display: inline-block; margin-bottom: 20px; transition: 0.2s; }
+.back-btn:hover { background: #000; color: var(--accent-color); }
+
+/* Hero */
+.hero { min-height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+.hero h1 { font-family: var(--font-mono); font-size: 4rem; font-weight: normal; font-style: italic; margin-bottom: 1rem; letter-spacing: -2px; line-height: 1; }
+.hero p { font-family: var(--font-mono); max-width: 500px; font-size: 1.2rem; color: var(--dim-color); margin-bottom: 3rem; }
+.main-tag { font-family: var(--font-mono); color: var(--dim-color); font-size: 0.8rem; margin-top: 20px; text-transform: uppercase; letter-spacing: 2px; border: 1px solid #333; padding: 10px 20px; transition: all 0.3s; }
+.main-tag:hover { border-color: var(--accent-color); color: var(--accent-color); }
+.scallion-divider { color: var(--accent-color); width: 4rem; height: 4rem; margin: 20px 0; opacity: 0.8; background-image: url(scallion.png); background-size: contain; background-repeat: no-repeat;}
+
+/* Project Cards */
+.pv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 40px; }
+.pv-card { border: 2px solid #000; background: rgba(255,206,52, 0.8); box-shadow: 10px 10px 0px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+.pv-card:hover { transform: translateY(-5px); box-shadow: 15px 15px 0px rgba(0,0,0,0.2); }
+.pv-img { width: 100%; height: 200px; object-fit: contain; background-color: #000; border-bottom: 2px solid #000; filter: saturate(100%); transition: filter 0.3s; }
+.pv-card:hover .pv-img { filter: saturate(200%); }
+.pv-info { padding: 15px; }
+.pv-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
+.pv-meta { font-family: var(--font-mono); font-size: 0.8rem; opacity: 0.7; }
+
+/* About Layout */
+.about-split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.about-text { font-size: 1.2rem; line-height: 1.6; }
+.about-img-placeholder { width: 100%; aspect-ratio: 1/1; border: 2px solid #000; background-image: url(media/raina.jpg); background-size: cover; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); color: #aaa; }
+.about-skills { margin-top: 30px; border: 2px solid #000; padding: 20px; }
+.skill-tag { display: inline-block; background: #000; color: #fff; padding: 5px 10px; margin: 5px; font-family: var(--font-mono); font-size: 0.9rem; }
+
+/* Footer */
+footer { text-align: center; padding: 20px 0 50px; font-size: 0.9rem; color: var(--dim-color); font-family: var(--font-mono); }
+
+/* Modal */
+.modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(22, 22, 22, 0.95); align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+.modal.show { display: flex; opacity: 1; }
+.modal-content { background: transparent; max-width: 800px; width: 90%; text-align: center; color: #fff; position: relative; }
+.modal-img { width: 100%; max-height: 60vh; object-fit: cover; margin-bottom: 30px; border: 1px solid #333; }
+.modal-text { max-width: 600px; margin: 0 auto; }
+.modal-title { font-size: 2rem; font-style: italic; margin-bottom: 15px; color: var(--accent-color); }
+.close-area { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; cursor: pointer; }
+.close-btn { position: fixed; top: 30px; right: 30px; color: var(--dim-color); font-family: var(--font-mono); cursor: pointer; background: none; border: none; font-size: 1rem; }
+.close-btn:hover { color: var(--accent-color); }
+
+/* Icons */
+.icon {
+    width: 1rem;
+    height: 1rem;
+    vertical-align: middle;
+    filter: invert(100%);
+    transition: filter 0.1s;
+}
+
+a:hover .icon {
+    filter: invert(74%) sepia(51%) saturate(649%) hue-rotate(349deg) brightness(108%) contrast(101%);
+    transform: skewX(-11deg);
+}
+
+
+/* ==========================================================================
+    MOBILE LAYOUT (OVERRIDES)
+    ========================================================================== */
+@media (max-width: 768px) {
+    :root {
+        /* --- MOBILE GEOMETRY (Hanging from Top-Right) --- */
+        /* Closed: Tabs hang down (Negative Angles relative to pivot) */
+        --ang-white: -10deg;
+        --ang-yellow: -20deg;
+        
+        /* Hover: Peek down slightly more */
+        --ang-white-hov: -13deg;
+        --ang-yellow-hov: -23deg;
+        
+        /* Open: Swing DOWN fully to cover screen (~ -85deg) */
+        --ang-open-white: -85deg;
+        --ang-open-yellow: -85deg;
+        
+        /* Peeking logic */
+        --ang-open-peek-tab: -82deg;
+        --ang-peek-main: -70deg;
+        --ang-peek-deep: -60deg;
+    }
+
+    body { display: block; } /* Disable Grid on Mobile */
+    #content-wrapper { margin: 0 auto; width: 95%; }
+    .hero, .section, footer { padding-left: 20px; }
+    
+    /* Initial State Override to prevent flash */
+    #curtain-white, #curtain-yellow { transform: rotate(-105deg); }
+    
+    /* --- Curtain Geometry: Pivot Top-Right, Position Above --- */
+    .curtain-layer {
+        width: 300vh;  
+        height: 100vw; 
+        top: auto; bottom: 100vh; 
+        left: auto; right: 0;
+        transform-origin: 100% 100%; /* Pivot Bottom-Right of curtain (Top-Right of Screen) */
+    }
+    
+    #projects-view, #about-view {
+        top: auto; bottom: 100vh;
+        left: auto; right: 0;
+        width: 300vh; height: 100vw;
+        transform-origin: 100% 100%;
+    }
+    
+    /* --- Inner Content: Counter-Rotation --- */
+    .pv-inner {
+        /* Content must rotate +85deg to stand upright when curtain is at -85deg */
+        transform: rotate(85deg);
+        transform-origin: 100% 0%; 
+        
+        position: absolute;
+        top: auto; bottom: -100vh; /* Push visual position down into viewport */
+        right: 0; left: auto;
+        
+        width: 100vw; height: 100vh;
+        padding-top: 100px;
+        padding-left: 20px; padding-right: 20px;
+        overflow-y: auto;
+    }
+
+    /* --- Tabs: Hanging on Bottom Edge --- */
+    .nav-tab { 
+        top: auto; bottom: -60px; 
+        left: auto; right: var(--tab-dist-white); 
+        height: 60px; font-size: 1.1rem; padding: 0 25px;
+        border-radius: 0 0 16px 16px;
+        box-shadow: 2px 5px 10px rgba(0,0,0,0.3);
+    }
+    
+    /* Mobile Tab Positions (Calculated from Right Edge) */
+    #curtain-white .nav-tab { right: 60vw; left: calc(100% - 95vw); } /* Default Fallback */
+    #curtain-yellow .nav-tab { right: 30vw; left: calc(100% - 65vw); } /* Default Fallback */
+    
+    .about-split { grid-template-columns: 1fr; }
+}
